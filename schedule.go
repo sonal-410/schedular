@@ -13,7 +13,7 @@ import (
 )
 
 type scheduler struct {
-	TaskID    int   `json:"taskID"`
+	TaskID    int   `json:"taskId"`
 	TimeStamp int64 `json:"timeStamp"`
 	Flag      bool  `json:"flag"`
 }
@@ -32,11 +32,12 @@ func schedule(w http.ResponseWriter, r *http.Request) {
 		} else {
 			fmt.Println("entity add")
 		}
+
 		_, err := stmtIns.Exec(q.TimeStamp, false, q.TaskID)
 		if err != nil {
 			panic(err.Error())
 		}
-		//	fmt.Println(num)
+
 	}
 }
 
@@ -110,6 +111,7 @@ func getschedule(w http.ResponseWriter, r *http.Request) {
 
 func finishedTasks() {
 	var task int64
+
 	fmt.Println("The tasks which are running are")
 	t := time.Now().Unix()
 	rows, err := db.Query("select TaskID from  scheduler where ?>TimeStamp ", t)
@@ -121,22 +123,22 @@ func finishedTasks() {
 		}
 		fmt.Println(task)
 	}
-	//fmt.Println(rows)
-	fmt.Println(task)
+
 	err = rows.Err()
 	if err != nil {
 		panic(err)
 	}
-	//fmt.Println("GET success")
 	if err != nil {
 		log.Fatal(err)
 	}
 }
+
 func main() {
 	r := mux.NewRouter()
 	// db, _ = sql.Open("mysql", "akhil:kamal@tcp(192.168.1.188:3306)/todo")
 	db, _ = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/todo")
 	defer db.Close()
+
 	r.HandleFunc("/schedule", schedule)
 	r.HandleFunc("/schedule/{id:[0-9]+}", getschedule)
 	// for {
@@ -144,6 +146,7 @@ func main() {
 	// 	time.Sleep(10000 * time.Millisecond)
 	// }
 	// fmt.Println(time.Now().Unix())
+
 	http.ListenAndServe(":8000", r)
 
 }
